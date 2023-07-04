@@ -1,5 +1,7 @@
 #!/usr/bin/python3
+"""Low memory cost"""
 
 
 class LockedClass:
-    __slots__ = ["first_name"] 
+    """Low memory cost"""
+    __slots__ = ["first_name"]
