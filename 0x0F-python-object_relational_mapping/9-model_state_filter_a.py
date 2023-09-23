@@ -1,44 +1,34 @@
 #!/usr/bin/python3
-"""
-Script that lists all State objects that contain the letter a from database.
-"""
-
-import sys
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from model_state import Base, State
+# lists all State objects that contain the letter a from a database
 
 
 if __name__ == "__main__":
-    """
-    Entry point of the script. Retrieves State objects that contain
-    the letter 'a' from the database.
-    """
+    from model_state import Base, State
+    from sys import argv
+    import sqlalchemy
+    from sqlalchemy.engine.url import URL
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import Session
 
-    # Get MySQL credentials and database name from command-line arguments
-    username = sys.argv[1]
-    password = sys.argv[2]
-    database = sys.argv[3]
+    mysql = {'drivername': 'mysql+mysqldb',
+             'host': 'localhost',
+             'port': '3306',
+             'username': argv[1],
+             'password': argv[2],
+             'database': argv[3],
+             }
 
-    # Connect to MySQL server
-    engine = create_engine(
-        f'mysql+mysqldb://{username}:{password}@localhost:3306/{database}'
-    )
-    # Create a configured "Session" class
-    Session = sessionmaker(bind=engine)
+    url = URL(**mysql)
 
-    # Create a Session instance
-    session = Session()
+    engine = create_engine(url, pool_pre_ping=True)
+    Base.metadata.create_all(engine)
 
-    states = session.query(State)\
-        .filter(State.name.like('%a%'))\
-        .order_by(State.id)\
-        .all()
+    session = Session(engine)
 
-    # Print the retrieved State objects
-    for state in states:
-        print(f"{state.id}: {state.name}")
+    query = session.query(State).filter(State.name.like('%a%'))\
+                                .order_by(State.id)
+    for r in query.all():
+        print("{}: {}".format(r.id, r.name))
 
-    # Close the session
     session.close()
 
