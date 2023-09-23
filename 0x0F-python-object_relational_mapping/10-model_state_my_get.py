@@ -1,30 +1,26 @@
 #!/usr/bin/python3
-# prints the State object with name input
+"""
+lists all State objects from the database hbtn_0e_6_usa
+"""
+import MySQLdb
+from sys import argv
+from sqlalchemy import (create_engine)
+from model_state import Base, State
+from sqlalchemy.orm import Session
 
 
 if __name__ == "__main__":
-    from model_state import Base, State
-    from sys import argv
-    from sqlalchemy.engine.url import URL
-    from sqlalchemy import create_engine
-    from sqlalchemy.orm import Session
-
-    db = {'drivername': 'mysql+mysqldb',
-          'host': 'localhost',
-          'port': '3306',
-          'username': argv[1],
-          'password': argv[2],
-          'database': argv[3]}
-
-    url = URL(**db)
-    engine = create_engine(url, pool_pre_ping=True)
+    engine = create_engine('mysql+mysqldb://{}:{}@localhost/{}'.format
+                           (argv[1], argv[2], argv[3]), pool_pre_ping=True)
     Base.metadata.create_all(engine)
+
     session = Session(engine)
 
-    sobj = (argv[4], )
-    try:
-        state = session.query(State).filter(State.name == sobj).one_or_none()
+    flag = 0
+    for state in session.query(State).filter_by(name=argv[4])\
+                                     .order_by(State.id).all():
         print("{}".format(state.id))
-    except:
+        flag = 1
+    if flag != 1:
         print("Not found")
-
+    session.close()
