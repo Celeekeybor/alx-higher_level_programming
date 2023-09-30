@@ -1,16 +1,14 @@
 #!/usr/bin/python3
-"""A script that:
- takes in a URL,
- sends a request to the URL 
-"""
+"""Python script that takes in a URL, sends a request to the URL and displays
+the body of the response (decoded in utf-8)."""
+from urllib import request, error
+import sys
 
 
 if __name__ == "__main__":
-    import sys
-    from urllib import request, error
-
     try:
-        with request.urlopen(sys.argv[1]) as res:
-            print(res.read().decode('UTF-8'))
-    except error.HTTPError as er:
-        print('Error code:', er.code)
+        with request.urlopen(sys.argv[1]) as response:
+            page_info = response.read()
+            print(page_info.decode('utf-8'))
+    except error.HTTPError as e:
+        print("Error code: {}".format(e.code))
