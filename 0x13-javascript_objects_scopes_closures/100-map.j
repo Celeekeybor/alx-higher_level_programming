@@ -1,9 +1,7 @@
 #!/usr/bin/node
-// function that returns the number of occurrences in a list
-const data = require('./100-data');
-const initialList = data.list;
+'use strict';
 
-const newList = initialList.map((value, index) => value * index);
-
-console.log(initialList);
+const list = require('./100-data.js').list;
+console.log(list);
+const newList = list.map((x, index) => x * index);
 console.log(newList);
